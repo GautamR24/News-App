@@ -6,7 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class NewsListAdapter(private val items: ArrayList<String>, private val listener: NewsItemClicked): RecyclerView.Adapter<NewsViewHolder>() {
+class NewsListAdapter( private val listener: NewsItemClicked): RecyclerView.Adapter<NewsViewHolder>() {
+    private val items: ArrayList<News> = ArrayList()
     // these are the methods of recyclerView. Adapter that needs to be implemented for Adapter
     //this function will return the view Holder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
@@ -19,19 +20,27 @@ class NewsListAdapter(private val items: ArrayList<String>, private val listener
         // so we will create callback, for creating callback we use interfaces
         val viewHolder = NewsViewHolder(view)
         view.setOnClickListener{
+
             listener.onItemClicked(items[viewHolder.absoluteAdapterPosition])
         }
-        return NewsViewHolder(view)
+        return viewHolder
     }
     // it takes each item, puts data inside it(basically it binds)
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
         val currentItem = items[position]
-        holder.titleView.text = currentItem
+        holder.titleView.text = currentItem.name
 
     }
     //how many items will be there
     override fun getItemCount(): Int {
         return items.size
+    }
+    // this function will give items to adapter, and adapter will update it's items
+    fun updateNews(updatedNews: ArrayList<News>){
+        items.clear()
+        items.addAll(updatedNews)
+        //this will notify the adpater that now you need to update the items
+        notifyDataSetChanged() // after this all the three methods above are again called
     }
 
 }
@@ -41,7 +50,7 @@ class NewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 }
 
 interface NewsItemClicked{
-    fun onItemClicked(item: String)
+    fun onItemClicked(item: News)
 }
 // for every adapter creation first create a viewholder than pass it to the adapter and implement the
 // three required methods of adapter
